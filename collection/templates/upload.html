@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="container-fluid mt-4">
+        <div class="row d-flex justify-content-center">
+            <div class="col-5">
+                <h4 class="mb-4">Upload Datasheets</h4>
+                <form enctype="multipart/form-data" method="post">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="form-group col-12">
+                            {{ form.headerColumns | as_crispy_field}}
+                        </div>
+                        <div class="form-group col-12">
+                            {{ form.datasheet | as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-12">
+                            <button class="btn btn-sm btn-primary" type="submit">Upload</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

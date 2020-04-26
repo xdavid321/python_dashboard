@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mt-2 mb-3">
+        <div class="col-12">
+            <h4 class="text-center">
+            {% if request.session.user_type == 'super' %}
+            Admin user
+            {% else %}
+            Settings
+            {% endif %}
+            </h4>
+        </div>
+    </div>
+    <div class="row mt-2">
+        {% if request.session.user_type == 'super' %}
+        <div class="col-12 col-md-3">
+            <div class="card">
+                <a href="{% url 'manage_user' %}">
+                    <div class="card-body">
+                        <h5 class="card-title">Manage Users</h5>
+                        <p class="card-text">Add, remove user. Assign markets to user</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        <div class="col-12 col-md-3">
+            <div class="card">
+                <a href="{% url 'change_my_password' %}">
+                    <div class="card-body">
+                        <h5 class="card-title">Change password</h5>
+                        <p class="card-text">Change password for the current account</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .card a {
+        text-decoration: none!important;
+    }
+    .card-title, .card-text{
+        color: #333;
+        text-decoration: none!important;
+    }
+    .card {
+        transition: 0.3s;
+    }
+    .card:hover {
+        transform: scale(1.02);
+    }
+</style>
+{% endblock %}

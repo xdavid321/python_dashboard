@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load extras %}
+{% load static %}
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row mt-3">
+            <div class="col-12">
+                <h4 class="text-center">Fetch Data</h4>
+            </div>
+        </div>
+        <div class="row justify-content-center mt-2">
+            <div class="col-4">
+                <form action="" method="GET">
+                    <div class="form-row justify-content-center">
+                        <div class="form-group">
+                            <label>Week</label>
+                            <input type="week" name="week" value="{% if request.GET.week %}{{request.GET.week}}{% endif %}" class="form-control">
+                        </div>
+                        <div class="form-group col-12 text-center">
+                            <button type="submit" class="btn btn-sm btn-primary">Fetch Data</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% if table_data %}
+            <div class="row mt-3">
+                <div class="col-12">
+                    <table class="table datasheets cell-border compact stripe nowrap">
+                        <thead>
+                            {% for header in table_data|get_item:'headers'%}
+                                <tr>
+                                    {% for header_col in header %}
+                                        {% if forloop.parentloop.counter == 1 %}
+                                            {% if forloop.counter > 4 %}
+                                            <th>{{header_col}}</th>
+                                            {% else %}
+                                            <th></th>
+                                            {% endif %}
+                                        {% endif %}
+                                        {% if forloop.parentloop.counter == 2 %}
+                                            <th>{{header_col}}</th>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </thead>
+                        <tbody>
+                            {% for data_row in table_data|get_item:'data'%}
+                                <tr>
+                                    {% for data_cell in data_row %}
+                                        <td>{{data_cell}}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <style>
+        thead th {
+            border: 0px!important;
+            outline: 0.15px solid white;
+        }
+        thead tr{
+            background: #0078d7;
+            color: white;
+        }
+        .table tr{
+            font-size: 12px;
+            padding: .45rem;
+        }
+        .table td{
+            font-size: 12px;
+            padding: .25rem;
+        }
+        .dataTables_scrollBody thead tr{
+            height: 0px!important;
+        }
+    </style>
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+    <script src="{% static 'js/jquery.table.marge.js' %}"></script>
+    <script>
+        $(document).ready( function () {
+            $('.datasheets').on( 'init.dt', function () {
+                $(this).margetable({ type: 2, colindex: [0,1, 2, 3] });
+                map = {}
+                $(this).parents('.dataTables_scroll').find('.dataTables_scrollHead').find('tr:nth-child(1)').find('th').each(function(i, cell) {
+                    curr = $(cell).text();
+                    prev = $(cell).prev().text()
+                    if(prev && curr == prev) {
+                        $(cell).prev().attr('colspan', parseInt($(cell).prev().attr('colspan')) + 1)
+                        $(cell).prev().css('text-align','center')
+                        $(cell).remove()
+                    }
+                });
+            }).DataTable({
+                searching: false,
+                paging: false,
+                ordering: false,
+                scrollX: 100
+            });
+        } );
+        
+
+    </script>
+{% endblock %}

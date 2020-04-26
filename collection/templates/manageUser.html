@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% load extras %}
+
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mt-3 mb-2">
+        <div class="col-12">
+            <h4>Available users <button class="btn btn-sm btn-primary" onclick="openCreateUserModal()">Add User</button></h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <table class="table">
+                {% if users %}
+                <thead>
+                    <tr>
+                        <th>User Id</th>
+                        <th>User Type</th>
+                        <th>Assigned markets</th>
+                        <th>Options</th>
+                    </tr>
+                </thead>
+                {% endif %}
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        {% for attr in user %}
+                        <td>{{attr}}</td>
+                        {% endfor %}
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="openDeleteUserModal('{{user|get_item:0}}')">Remove</button>
+                            <button class="btn btn-sm btn-primary" onclick="openChangePasswordModal('{{user|get_item:0}}')">Change Password</button>
+                            <button class="btn btn-sm btn-primary" onclick="openAsignMarketModal('{{user|get_item:0}}', '{{user|get_item:2}}')">Assign market</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="assignMarketModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Assign Markets</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'assign_market' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="form-group col-12">
+                            <label>User Id</label>
+                            <input class="form-control" readonly type="text" name="user_id" id="user_id">
+                        </div>
+                        <div class="form-group col-12">
+                            <label>Markets</label>
+                            <input class="form-control" type="text" name="markets" id="markets">
+                            <small class="form-text text-muted">Leave blank to assign all markets</small>
+                            <small class="form-text text-muted">Add multiple markets using , eg. market1,market2</small>
+                        </div>
+                        <div class="form-group col-12">
+                            <button type="submit" class="btn btn-sm btn-primary">Assign</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="changePasswordModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change password</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'change_password' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="form-group col-12">
+                            <label>User Id</label>
+                            <input class="form-control" readonly type="text" name="user_id" id="user_id">
+                        </div>
+                        <div class="form-group col-12">
+                            <label>Password</label>
+                            <input class="form-control" type="text" name="password" id="password">
+                        </div>
+                        <div class="form-group col-12">
+                            <button type="submit" class="btn btn-sm btn-primary">Change password</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="deleteUserModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'delete_user' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="form-group col-12">
+                            <label>User Id</label>
+                            <input class="form-control" readonly type="text" name="user_id" id="user_id">
+                        </div>
+                        <p>Confirm delete user ?</p>
+                        <div class="form-group col-12">
+                            <button type="submit" class="btn btn-sm btn-danger">Confirm</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="addUserModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add user</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'add_user' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="form-group col-12">
+                            <label>User Id</label>
+                            <input class="form-control" type="text" name="user_id" id="user_id">
+                        </div>
+                        <div class="form-group col-12">
+                            <label>password</label>
+                            <input class="form-control" type="text" name="password" id="password">
+                        </div>
+                        <div class="form-group col-12">
+                            <label>User Type</label>
+                            <select class="form-control" name="user_type" id="user_type" onchange="changeUserType()">
+                                <option value="external" selected>External User</option>
+                                <option value="super">Super User</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-12">
+                            <label>Markets</label>
+                            <input class="form-control" type="text" name="markets" id="markets">
+                            <small class="form-text text-muted">Leave blank for Super user</small>
+                            <small class="form-text text-muted">Leave blank to assign all markets</small>
+                            <small class="form-text text-muted">Add multiple markets using , eg. market1,market2</small>
+                        </div>
+
+                        <div class="form-group col-12">
+                            <button type="submit" class="btn btn-sm btn-danger">Confirm</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function openAsignMarketModal(user_id, markets){
+        $('#assignMarketModal #user_id').val(user_id);
+        if(markets == 'All'){
+            markets = ''
+        }
+        $('#assignMarketModal #markets').val(markets)
+        $('#assignMarketModal').modal('show')
+    }
+    function openChangePasswordModal(user_id){
+        $('#changePasswordModal #user_id').val(user_id)
+        $('#changePasswordModal').modal('show')
+    }
+    function openDeleteUserModal(user_id){
+        $('#deleteUserModal #user_id').val(user_id)
+        $('#deleteUserModal').modal('show')
+    }
+    function openCreateUserModal(){
+        $('#addUserModal').modal('show');
+    }
+    function changeUserType(){
+        userType = $('#addUserModal #user_type').val();
+        if(userType == 'super'){
+            $('#addUserModal #markets').attr('disabled', 'disabled')
+        } else {
+            $('#addUserModal #markets').removeAttr('disabled')
+        }
+    }
+</script>
+{% endblock %}
